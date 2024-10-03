@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load menu_tags %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    {% if menu_list %}
+        {% for menu in menu_list %}
+            {% draw_menu menu %}
+        {% endfor %}
+    {% else %}
+        <h2>Необходимо создать меню</h2>
+    {% endif %}
+{% endblock %}
