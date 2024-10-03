@@ -1,3 +1,6 @@
 .idea/
 
 *_symlink
+
+.env
+.env.docker

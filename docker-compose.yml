@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: postgres-db
+    ports:
+      - '${PORT_DB}:5432'
+    environment:
+      - ENVIRONMENT=docker
+      - POSTGRES_DB=${NAME_DB}
+      - POSTGRES_USER=${USER_DB}
+      - POSTGRES_PASSWORD=${PASSWD_DB}
+    env_file:
+      - .env.docker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${USER_DB} -d ${NAME_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  django:
+    build: .
+    container_name: django
+    command: sh -c "python manage.py collectstatic --no-input &&
+                    python manage.py makemigrations &&
+                    python manage.py migrate &&
+                    python manage.py shell < create_superuser.py &&
+                    python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/project
+      - static_data:/project/static
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=docker
+      - DATABASE_URL=postgresql://${USER_DB}:${PASSWD_DB}@${HOST_DB}:${PORT_DB}/${NAME_DB}
+    env_file:
+      - .env.docker
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  static_data:
+
+networks:
+  app-network:
+    driver: bridge
