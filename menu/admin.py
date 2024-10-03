@@ -9,11 +9,4 @@ class MenuItemInline(admin.StackedInline):
 
 @admin.register(Menu)
 class MenuAdmin(admin.ModelAdmin):
-  inlines = [MenuItemInline]
-
-
-@admin.register(MenuItem)
-class MenuItemAdmin(admin.ModelAdmin):
-  list_display = ('name', 'menu', 'parent', 'order')
-  list_filter = ('menu',)
-  ordering = ('menu', 'parent', 'order')
+    inlines = [MenuItemInline]
