@@ -4,6 +4,8 @@ from django.urls import reverse
 
 class Menu(models.Model):
   name = models.CharField(max_length=100, unique=True)
+  url = models.CharField(max_length=200, blank=True, null=True)  # Явный URL
+  named_url = models.CharField(max_length=100, blank=True, null=True)
 
   def __str__(self):
     return self.name

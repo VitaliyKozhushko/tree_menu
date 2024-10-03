@@ -20,16 +20,13 @@ def draw_menu(context, menu_name):
     # Выделение активного пункта и его родителей
     def find_active_item(items, current_url):
         for item in items:
-            # Проверяем, является ли текущий элемент активным
             if item.get_url() == current_url:
                 return item
-            # Проверяем, есть ли у элемента дочерние элементы
             if item.children.count() > 0:
-                # Рекурсивно ищем активный элемент среди дочерних
                 active_child = find_active_item(item.children.all(), current_url)
                 if active_child:
-                    return active_child  # Возвращаем найденный активный дочерний элемент
-        return None  # Если активный элемент не найден
+                    return active_child
+        return None
 
     active_item = find_active_item(menu.items.all(), current_url)
 

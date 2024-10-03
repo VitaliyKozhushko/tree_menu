@@ -3,6 +3,13 @@
 {% load menu_tags %}
 
 {% block content %}
-    <h1>Меню: </h1>
-    {% draw_menu 'main_menu' %}
+    {% if menus %}
+        {% for menu in menus %}
+            <h1>{{ menu.name }}</h1>
+            <p>Здесь ваше меню:</p>
+            {% draw_menu menu.name %}
+        {% endfor %}
+    {% else %}
+        <p>Меню не найдено для текущего URL.</p>
+    {% endif %}
 {% endblock %}
