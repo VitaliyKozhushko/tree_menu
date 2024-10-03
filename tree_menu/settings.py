@@ -9,24 +9,37 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+from environs import Env
 
+env = Env()
+env.read_env()
+DEBUG = env.bool("DEBUG", default=False)
+
+ENVIRONMENT = env('ENVIRONMENT', default='local')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+if ENVIRONMENT == 'docker':
+    env.read_env(path=os.path.join(BASE_DIR, '.env.docker'))
+else:
+    env.read_env(path=os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-fnwr6-=ct2^macoi!q*%^jh(7v5_=m*+c9#d$-88oopzx-rga%'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
+
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS')
 
 # Application definition
 
@@ -49,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'tree_menu.urls'
+ROOT_URLCONF = env('ROOT_URLCONF')
 
 TEMPLATES = [
     {
@@ -75,8 +88,12 @@ WSGI_APPLICATION = 'tree_menu.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': env('HOST_DB'),
+        'USER': env('USER_DB'),
+        'PASSWORD': env('PASSWD_DB'),
+        'NAME': env('NAME_DB'),
+        'PORT': env('PORT_DB')
     }
 }
 
@@ -115,7 +132,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, env('STATIC_URL'))
+
+STATIC_URL = env('STATIC_URL')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
