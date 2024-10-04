@@ -4,15 +4,19 @@
 
 {% block content %}
     {% if menus %}
-        <div class="menu-list">
+        <ul>
+        Список меню:
             {% for menu in menus %}
-                <div class="menu-item">
-                    <h1>Меню: {{ menu.name }}</h1>
-                    {% draw_menu menu_url menu.name item_url  %}
-                </div>
+                <li>
+                    {% if menu.url %}
+                        <a href="{{ menu.url }}">{{ menu.name }}</a>
+                    {% else %}
+                        <a href="{% url menu.named_url %}">{{ menu.name }}</a>
+                    {% endif %}
+                </li>
             {% endfor %}
-        </div>
+        </ul>
     {% else %}
-        <p>Меню не найдено для текущего URL.</p>
+        <p>Нет созданных меню. Необходимо создать меню через админку.</p>
     {% endif %}
 {% endblock %}

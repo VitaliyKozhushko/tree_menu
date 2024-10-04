@@ -4,7 +4,7 @@ from django.db import models
 from .models import Menu, MenuItem
 
 
-def home(request, menu_url, item_urls=None):
+def tree_menu(request, menu_url, item_urls=None):
   if not item_urls:
     current_url = request.path
     current_named_url = resolve(current_url).url_name if resolve(current_url).url_name else ''
@@ -16,7 +16,7 @@ def home(request, menu_url, item_urls=None):
       'menus': menus
     }
 
-    return render(request, 'main.html', context)
+    return render(request, 'tree_menu.html', context)
 
   item_url = [item_url for item_url in item_urls.split('/') if item_url][-1]
 
@@ -50,7 +50,14 @@ def home(request, menu_url, item_urls=None):
     'menus': menus
   }
 
-  return render(request, 'main.html', context)
+  return render(request, 'tree_menu.html', context)
+
+def main(request):
+  menus = Menu.objects.filter(
+    models.Q(url__isnull=False) & ~models.Q(url='') |
+    models.Q(named_url__isnull=False) & ~models.Q(named_url='')
+)
+  return render(request, 'main.html', {'menus': menus})
 
 
 def get_matching_menus(current_url, current_named_url):

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load menu_tags %}
+
+{% block content %}
+    {% if menus %}
+        <div class="menu-list">
+            {% for menu in menus %}
+                <div class="menu-item">
+                    <h1>Меню: {{ menu.name }}</h1>
+                    {% draw_menu menu_url menu.name item_url  %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Меню не найдено для текущего URL.</p>
+    {% endif %}
+{% endblock %}
