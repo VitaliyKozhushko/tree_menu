@@ -5,10 +5,9 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
-def draw_menu(context, menu_name):
-    request = context['request']
-    current_url = request.path
+def draw_menu(context, menu_url, menu_name, item_url=None):
 
     try:
         menu = Menu.objects.prefetch_related(
@@ -17,29 +16,25 @@ def draw_menu(context, menu_name):
     except Menu.DoesNotExist:
         return ''
 
-    # Выделение активного пункта и его родителей
-    def find_active_item(items, current_url):
-        for item in items:
-            if item.get_url() == current_url:
-                return item
-            if item.children.count() > 0:
-                active_child = find_active_item(item.children.all(), current_url)
-                if active_child:
-                    return active_child
-        return None
+    # Функция для рекурсивного создания полного URL для элемента меню
+    def build_full_url(item):
+        if item.parent:
+            return build_full_url(item.parent) + '/' + item.get_url()
+        return f'/{menu_url}/' + item.get_url()
 
-    active_item = find_active_item(menu.items.all(), current_url)
-
+    # Рекурсивная функция для отображения меню
     def render_menu(items, parent=None):
         html = '<ul>'
         for item in items:
             if item.parent == parent:
-                css_class = 'active' if item == active_item else ''
-                html += f'<li class="{css_class}"><a href="{item.get_url()}">{item.title}</a>'
+                full_url = build_full_url(item)
+                css_class = 'active' if item.get_url() == item_url else ''
+                html += f'<li><a class="{css_class}" href="{full_url}">{item.title}</a>'
                 html += render_menu(items, item)
                 html += '</li>'
         html += '</ul>'
         return html
 
+    # Генерируем HTML для всего меню
     menu_html = render_menu(menu.items.all())
     return mark_safe(menu_html)
