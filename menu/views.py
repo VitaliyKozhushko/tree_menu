@@ -6,13 +6,16 @@ from .models import Menu
 
 def home(request, path=''):
   current_url = request.path
-  current_named_url = resolve(current_url).url_name if resolve(current_url).url_name else None
+  current_named_url = resolve(current_url).url_name if resolve(current_url).url_name else ''
 
-  menus = Menu.objects.filter(
-    (models.Q(url=current_url) | models.Q(named_url=current_named_url)) &
-    (models.Q(url__isnull=False) | models.Q(named_url__isnull=False))
-  )
-
-  print(menus)
+  upd_current_url = current_url.strip('/')
+  print(upd_current_url)
+  menus = get_matching_menus(upd_current_url, current_named_url)
 
   return render(request, 'main.html', {'menus': menus})
+
+
+def get_matching_menus(current_url, current_named_url):
+  return Menu.objects.filter(
+    models.Q(url=current_url) | models.Q(named_url=current_named_url)
+  )

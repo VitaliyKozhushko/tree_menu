@@ -4,11 +4,14 @@
 
 {% block content %}
     {% if menus %}
-        {% for menu in menus %}
-            <h1>{{ menu.name }}</h1>
-            <p>Здесь ваше меню:</p>
-            {% draw_menu menu.name %}
-        {% endfor %}
+        <div class="menu-list">
+            {% for menu in menus %}
+                <div class="menu-item">
+                    <h1>Меню: {{ menu.name }}</h1>
+                    {% draw_menu menu.name %}
+                </div>
+            {% endfor %}
+        </div>
     {% else %}
         <p>Меню не найдено для текущего URL.</p>
     {% endif %}
