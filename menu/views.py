@@ -58,7 +58,6 @@ def main(request):
 
 def get_matching_menus(current_url):
   # Попытка найти меню или пункт меню по URL
-  print('current_url:', current_url, dir(current_url))
   menu_with_items = Menu.objects.prefetch_related(
     Prefetch(
       'items',

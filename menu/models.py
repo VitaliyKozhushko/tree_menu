@@ -1,6 +1,7 @@
 from django.db import models
-from django.urls import reverse
-
+from django.urls import (reverse,
+                         resolve,
+                         NoReverseMatch)
 
 class Menu(models.Model):
   name = models.CharField(max_length=100, unique=True)
@@ -34,6 +35,13 @@ class MenuItem(models.Model):
     return self.title
 
   def get_url(self):
-    if self.named_url:
+    if not self.named_url:
+      return self.url
+
+    try:
+      resolve(reverse(self.named_url))
       return reverse(self.named_url).lstrip('/')
-    return self.url
+    except NoReverseMatch:
+      return reverse('tree_menu', kwargs={'item_url': self.named_url}).lstrip('/')
+    except Exception:
+      return self.named_url
