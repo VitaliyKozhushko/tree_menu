@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.urls import resolve
 from django.db import models
 from .models import Menu, MenuItem
+from django.http import HttpResponse, HttpResponseNotFound
 
 
 def tree_menu(request, menu_url, item_urls=None):

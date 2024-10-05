@@ -1,6 +1,6 @@
 from django import template
 from django.db.models import Prefetch
-from menu.models import Menu, MenuItem
+from ..models import Menu, MenuItem
 from django.utils.safestring import mark_safe
 
 register = template.Library()
