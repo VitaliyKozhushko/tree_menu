@@ -9,7 +9,7 @@
             {% for menu in menus %}
                 <div class="menu-item">
                     <h1>Меню: <a href="{% menu_link menu %}">{{ menu.name }}</a></h1>
-                    {% draw_menu menu.id item_url  %}
+                    {% draw_menu menu.id item_url %}
                 </div>
             {% endfor %}
         </div>

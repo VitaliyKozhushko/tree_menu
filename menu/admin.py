@@ -9,4 +9,4 @@ class MenuItemInline(admin.StackedInline):
 
 @admin.register(Menu)
 class MenuAdmin(admin.ModelAdmin):
-    inlines = [MenuItemInline]
+  inlines = [MenuItemInline]

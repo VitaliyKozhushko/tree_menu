@@ -1,13 +1,13 @@
-from http.client import HTTPException
-
-from django.shortcuts import render, get_object_or_404
-from django.urls import resolve
-from .models import Menu, MenuItem
+from django.shortcuts import render
 from django.db.models import Prefetch, Q
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
+from .models import Menu, MenuItem
 
 
 def tree_menu(request, item_url):
+  """
+  Построение списка меню на странице с опр. url
+  """
   current_url = request.path.strip('/')
 
   menus = get_matching_menus(current_url)
@@ -19,36 +19,11 @@ def tree_menu(request, item_url):
 
   return render(request, 'tree_menu.html', context)
 
-  # item_url = [item_url for item_url in item_urls.split('/') if item_url][-1]
-  #
-  # item = get_object_or_404(MenuItem, url=item_url, menu__url=menu_url)
-  #
-  # url_parts = []
-  #
-  # def add_parents(item):
-  #   if item.parent:
-  #     add_parents(item.parent)
-  #   url_parts.append(str(item.id))
-  #
-  # add_parents(item)
-  #
-  # url_parts.insert(0, menu_url)
-  #
-  # current_url = request.path
-  # current_named_url = resolve(current_url).url_name if resolve(current_url).url_name else ''
-  #
-  # menus = get_matching_menus(menu_url, current_named_url)
-  #
-  # context = {
-  #   'menu_url': menu_url,
-  #   'item_url': item_url,
-  #   'menus': menus
-  # }
-
-  # return render(request, 'tree_menu.html', context)
-
 
 def main(request):
+  """
+  Отображение всех меню на главной странице у которых есть либо url, либо named url
+  """
   menus = Menu.objects.filter(
     Q(url__isnull=False) & ~Q(url='') |
     Q(named_url__isnull=False) & ~Q(named_url='')
@@ -57,7 +32,9 @@ def main(request):
 
 
 def get_matching_menus(current_url):
-  # Попытка найти меню или пункт меню по URL
+  """
+  Поиск меню по url, для отображения на одной странице
+  """
   menu_with_items = Menu.objects.prefetch_related(
     Prefetch(
       'items',
