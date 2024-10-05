@@ -35,5 +35,5 @@ class MenuItem(models.Model):
 
   def get_url(self):
     if self.named_url:
-      return reverse(self.named_url, kwargs={'menu_url': self.menu.url}).lstrip('/')
+      return reverse(self.named_url).lstrip('/')
     return self.url

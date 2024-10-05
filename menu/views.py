@@ -2,9 +2,8 @@ from http.client import HTTPException
 
 from django.shortcuts import render, get_object_or_404
 from django.urls import resolve
-from django.db import models
 from .models import Menu, MenuItem
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import HttpResponse, HttpResponseNotFound
 
 
@@ -51,20 +50,26 @@ def tree_menu(request, item_url):
 
 def main(request):
   menus = Menu.objects.filter(
-    models.Q(url__isnull=False) & ~models.Q(url='') |
-    models.Q(named_url__isnull=False) & ~models.Q(named_url='')
+    Q(url__isnull=False) & ~Q(url='') |
+    Q(named_url__isnull=False) & ~Q(named_url='')
   )
   return render(request, 'main.html', {'menus': menus})
 
 
 def get_matching_menus(current_url):
   # Попытка найти меню или пункт меню по URL
+  print('current_url:', current_url, dir(current_url))
   menu_with_items = Menu.objects.prefetch_related(
     Prefetch(
       'items',
       queryset=MenuItem.objects.select_related('menu').order_by('order')
     )
-  ).filter(models.Q(url=current_url) | models.Q(items__url=current_url)).distinct()
+  ).filter(
+    Q(url=current_url) |
+    Q(items__url=current_url) |
+    Q(named_url=current_url) |
+    Q(items__named_url=current_url)
+  ).distinct()
 
   if menu_with_items:
     return menu_with_items

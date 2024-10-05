@@ -22,6 +22,6 @@ from menu import views
 urlpatterns = [
   path('admin/', admin.site.urls),
   path('', views.main, name='main'),
-  path('hello1', views.tree_menu, name='hello'),
+  path('hello', views.tree_menu, {'item_url': 'hello'}, name='hello'),
   re_path(r'(?P<item_url>[\w/-]*)$', views.tree_menu, name='tree_menu'),
 ]
