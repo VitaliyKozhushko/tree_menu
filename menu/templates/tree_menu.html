@@ -8,7 +8,7 @@
             {% for menu in menus %}
                 <div class="menu-item">
                     <h1>Меню: {{ menu.name }}</h1>
-                    {% draw_menu menu_url menu.name item_url  %}
+                    {% draw_menu menu.id item_url  %}
                 </div>
             {% endfor %}
         </div>

@@ -1,70 +1,76 @@
+from http.client import HTTPException
+
 from django.shortcuts import render, get_object_or_404
 from django.urls import resolve
 from django.db import models
 from .models import Menu, MenuItem
+from django.db.models import Prefetch
 from django.http import HttpResponse, HttpResponseNotFound
 
 
-def tree_menu(request, menu_url, item_urls=None):
-  if not item_urls:
-    current_url = request.path
-    current_named_url = resolve(current_url).url_name if resolve(current_url).url_name else ''
+def tree_menu(request, item_url):
+  current_url = request.path.strip('/')
 
-    menus = get_matching_menus(menu_url, current_named_url)
-
-    context = {
-      'menu_url': menu_url,
-      'menus': menus
-    }
-
-    return render(request, 'tree_menu.html', context)
-
-  item_url = [item_url for item_url in item_urls.split('/') if item_url][-1]
-
-  item = get_object_or_404(MenuItem, url=item_url)
-
-  url_parts = []
-
-  def add_parents(item):
-    if item.parent:
-      add_parents(item.parent)
-    url_parts.append(str(item.id))
-
-
-  add_parents(item)
-
-  url_parts.insert(0, menu_url)
-
-  final_url = '/' + '/'.join(url_parts)
-
-  # return redirect(final_url)
-
-  current_url = request.path
-  current_named_url = resolve(current_url).url_name if resolve(current_url).url_name else ''
-
-  # upd_current_url = current_url.strip('/')
-  menus = get_matching_menus(menu_url, current_named_url)
+  menus = get_matching_menus(current_url)
 
   context = {
-    'menu_url': menu_url,
     'item_url': item_url,
     'menus': menus
   }
 
   return render(request, 'tree_menu.html', context)
 
+  # item_url = [item_url for item_url in item_urls.split('/') if item_url][-1]
+  #
+  # item = get_object_or_404(MenuItem, url=item_url, menu__url=menu_url)
+  #
+  # url_parts = []
+  #
+  # def add_parents(item):
+  #   if item.parent:
+  #     add_parents(item.parent)
+  #   url_parts.append(str(item.id))
+  #
+  # add_parents(item)
+  #
+  # url_parts.insert(0, menu_url)
+  #
+  # current_url = request.path
+  # current_named_url = resolve(current_url).url_name if resolve(current_url).url_name else ''
+  #
+  # menus = get_matching_menus(menu_url, current_named_url)
+  #
+  # context = {
+  #   'menu_url': menu_url,
+  #   'item_url': item_url,
+  #   'menus': menus
+  # }
+
+  # return render(request, 'tree_menu.html', context)
+
+
 def main(request):
   menus = Menu.objects.filter(
     models.Q(url__isnull=False) & ~models.Q(url='') |
     models.Q(named_url__isnull=False) & ~models.Q(named_url='')
-)
+  )
   return render(request, 'main.html', {'menus': menus})
 
 
-def get_matching_menus(current_url, current_named_url):
-  return Menu.objects.filter(
-    models.Q(url=current_url) | models.Q(named_url=current_named_url)
-  )
+def get_matching_menus(current_url):
+  # Попытка найти меню или пункт меню по URL
+  menu_with_items = Menu.objects.prefetch_related(
+    Prefetch(
+      'items',
+      queryset=MenuItem.objects.select_related('menu').order_by('order')
+    )
+  ).filter(models.Q(url=current_url) | models.Q(items__url=current_url)).distinct()
+
+  if menu_with_items:
+    return menu_with_items
+
+  return None
+
 
 def hello(request, menu_url):
   return HttpResponse('Hello world!')

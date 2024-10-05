@@ -7,30 +7,23 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def draw_menu(context, menu_url, menu_name, item_url=None):
+def draw_menu(context, menu_id, item_url):
   request = context['request']
-  current_url = request.path
+  current_url = request.path.strip('/')
   try:
     menu = Menu.objects.prefetch_related(
       Prefetch(
         'items',
         queryset=MenuItem.objects.all().select_related('parent').prefetch_related('children')
       )
-    ).get(name=menu_name)
+    ).get(id=menu_id)
   except Menu.DoesNotExist:
     return ''
-
-  # Функция для рекурсивного создания полного URL для элемента меню
-  def build_full_url(item):
-    print('item:', item.title, item.named_url)
-    if item.parent:
-      return build_full_url(item.parent) + '/' + item.get_url()
-    return f'/{menu_url}/' + item.get_url()  if not item.named_url else item.get_url()
 
   # Функция для поиска активного элемента и его родительской цепочки
   def find_active_item_and_parents(items, current_url):
     for item in items:
-      full_url = build_full_url(item)
+      full_url = item.get_url()
       if full_url == current_url:
         return item, [item] + list(find_all_parents(item))
     return None, []
@@ -48,15 +41,15 @@ def draw_menu(context, menu_url, menu_name, item_url=None):
     html = '<ul>'
     for item in items:
       if item.parent == parent:
-        full_url = build_full_url(item)
+        full_url = item.get_url()
         css_class = 'active' if item.get_url() == item_url else ''
         is_open = item in active_parents or item == active_item
         if is_open or (active_item and active_item.parent == item):
-            html += f'<li><a class="{css_class}" href="{full_url}">{item.title}</a>'
+            html += f'<li><a class="{css_class}" href="/{full_url}">{item.title}</a>'
             html += render_menu(items, item, level + 1)
             html += '</li>'
         else:
-            html += f'<li><a class="{css_class}" href="{full_url}">{item.title}</a></li>'
+            html += f'<li><a class="{css_class}" href="/{full_url}">{item.title}</a></li>'
     html += '</ul>'
     return html
 
