@@ -22,9 +22,10 @@ def draw_menu(context, menu_url, menu_name, item_url=None):
 
   # Функция для рекурсивного создания полного URL для элемента меню
   def build_full_url(item):
+    print('item:', item.title, item.named_url)
     if item.parent:
       return build_full_url(item.parent) + '/' + item.get_url()
-    return f'/{menu_url}/' + item.get_url()
+    return f'/{menu_url}/' + item.get_url()  if not item.named_url else item.get_url()
 
   # Функция для поиска активного элемента и его родительской цепочки
   def find_active_item_and_parents(items, current_url):

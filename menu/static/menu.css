@@ -1,0 +1,15 @@
+.active {
+  color: red;
+}
+
+.menu-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.menu-list .menu-item {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  height: 300px;
+}

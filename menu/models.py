@@ -30,15 +30,10 @@ class MenuItem(models.Model):
   class Meta:
     ordering = ['order']
 
-  def get_absolute_url(self):
-    if self.named_url:
-      return reverse(self.named_url)
-    return self.url or '/'
-
   def __str__(self):
     return self.title
 
   def get_url(self):
     if self.named_url:
-      return reverse(self.named_url)
+      return reverse(self.named_url, kwargs={'menu_url': self.menu.url}).lstrip('/')
     return self.url

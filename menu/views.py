@@ -65,3 +65,6 @@ def get_matching_menus(current_url, current_named_url):
   return Menu.objects.filter(
     models.Q(url=current_url) | models.Q(named_url=current_named_url)
   )
+
+def hello(request, menu_url):
+  return HttpResponse('Hello world!')
