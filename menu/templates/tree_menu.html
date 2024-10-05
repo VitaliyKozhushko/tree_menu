@@ -3,11 +3,16 @@
 {% load menu_tags %}
 
 {% block content %}
+    <a href="/">Главная</a>
     {% if menus %}
         <div class="menu-list">
             {% for menu in menus %}
                 <div class="menu-item">
-                    <h1>Меню: {{ menu.name }}</h1>
+                    {% if menu.url %}
+                        <h1>Меню: <a href="{% url 'tree_menu' item_url=menu.url %}">{{ menu.name }}</a></h1>
+                    {% else %}
+                        <h1>Меню:<a href="{% url 'tree_menu' item_url=menu.named_url %}">{{ menu.name }}</a></h1>
+                    {% endif %}
                     {% draw_menu menu.id item_url  %}
                 </div>
             {% endfor %}
