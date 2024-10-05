@@ -35,7 +35,7 @@ class MenuItem(models.Model):
     return self.title
 
   def get_url(self):
-    if not self.named_url:
+    if not self.named_url or self.named_url and self.url:
       return self.url
 
     try:
