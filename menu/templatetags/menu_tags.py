@@ -1,13 +1,14 @@
+from typing import Any, Optional, List, Union, Tuple
 from django import template
 from django.db.models import Prefetch
-from django.utils.safestring import mark_safe
+from django.utils.safestring import mark_safe, SafeString
 from ..models import Menu, MenuItem
 
 register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def draw_menu(context, menu_id, item_url):
+def draw_menu(context: dict[str, Any], menu_id: int, item_url: str) -> Optional[SafeString]:
   """
   Отрисовка меню на странице
   """
@@ -23,18 +24,18 @@ def draw_menu(context, menu_id, item_url):
   except Menu.DoesNotExist:
     return ''
 
-  def find_active_item_and_parents(items, current_url):
+  def find_active_item_and_parents(items: List[MenuItem], current_url: str) -> Union[
+    Tuple[MenuItem, List[MenuItem]], Tuple[None, list]]:
     """
     Определение активного элемента и ео родительской цепочки
     """
     for item in items:
-      full_url = item.get_url()
-      if full_url == current_url:
+      if item.get_url() == current_url:
         return item, [item] + list(find_all_parents(item))
     return None, []
 
   # Функция для получения всех родителей активного элемента
-  def find_all_parents(item):
+  def find_all_parents(item: MenuItem) -> List[MenuItem]:
     """
     Получение списка родителей активного элемента
     """
@@ -45,7 +46,7 @@ def draw_menu(context, menu_id, item_url):
   active_item, active_parents = find_active_item_and_parents(menu.items.all(), current_url)
 
   # Рекурсивная функция для отображения меню
-  def render_menu(items, parent=None, level=0):
+  def render_menu(items: List[MenuItem], parent: Optional[MenuItem] = None, level: int = 0) -> str:
     """
     Добавление меню на страницу
     """

@@ -1,10 +1,11 @@
+from typing import List, Optional
 from django.shortcuts import render
 from django.db.models import Prefetch, Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from .models import Menu, MenuItem
 
 
-def tree_menu(request, item_url):
+def tree_menu(request: HttpRequest, item_url: str) -> HttpResponse:
   """
   Построение списка меню на странице с опр. url
   """
@@ -20,7 +21,7 @@ def tree_menu(request, item_url):
   return render(request, 'tree_menu.html', context)
 
 
-def main(request):
+def main(request: HttpRequest) -> HttpResponse:
   """
   Отображение всех меню на главной странице у которых есть либо url, либо named url
   """
@@ -31,7 +32,7 @@ def main(request):
   return render(request, 'main.html', {'menus': menus})
 
 
-def get_matching_menus(current_url):
+def get_matching_menus(current_url: str) -> Optional[List[Menu]]:
   """
   Поиск меню по url, для отображения на одной странице
   """
