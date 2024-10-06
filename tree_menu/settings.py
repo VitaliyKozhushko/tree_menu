@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'menu'
 ]
 
 MIDDLEWARE = [
@@ -93,7 +94,10 @@ DATABASES = {
         'USER': env('USER_DB'),
         'PASSWORD': env('PASSWD_DB'),
         'NAME': env('NAME_DB'),
-        'PORT': env('PORT_DB')
+        'PORT': env('PORT_DB'),
+        'TEST': {
+            'NAME': 'test_mydb',
+        },
     }
 }
 

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load menu_tags title_menu %}
+
+{% block content %}
+    <a href="/">Главная</a>
+    {% if menus %}
+        <div class="menu-list">
+            {% for menu in menus %}
+                <div class="menu-item">
+                    <h1>Меню: <a href="{% menu_link menu %}">{{ menu.title }}</a></h1>
+                    {% draw_menu menu.id item_url %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Меню не найдено для текущего URL.</p>
+    {% endif %}
+{% endblock %}

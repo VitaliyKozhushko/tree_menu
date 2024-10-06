@@ -15,8 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import (path,
+                         re_path)
+from menu import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+  path('admin/', admin.site.urls),
+  path('', views.main, name='main'),
+  path('hello', views.tree_menu, {'item_url': 'hello'}, name='hello'),
+  re_path(r'(?P<item_url>[\w/-]*)$', views.tree_menu, name='tree_menu'),
 ]

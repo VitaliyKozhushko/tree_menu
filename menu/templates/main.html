@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load menu_tags title_menu %}
+
+{% block content %}
+    {% if menus %}
+        <ul>
+            Список меню:
+            {% for menu in menus %}
+                <li>
+                    <a href="{% menu_link menu %}">{{ menu.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Нет созданных меню. Необходимо создать меню через админку.</p>
+    {% endif %}
+{% endblock %}
