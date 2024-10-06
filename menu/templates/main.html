@@ -8,7 +8,7 @@
             Список меню:
             {% for menu in menus %}
                 <li>
-                    <a href="{% menu_link menu %}">{{ menu.name }}</a>
+                    <a href="{% menu_link menu %}">{{ menu.title }}</a>
                 </li>
             {% endfor %}
         </ul>

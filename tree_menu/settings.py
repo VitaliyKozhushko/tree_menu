@@ -94,7 +94,10 @@ DATABASES = {
         'USER': env('USER_DB'),
         'PASSWORD': env('PASSWD_DB'),
         'NAME': env('NAME_DB'),
-        'PORT': env('PORT_DB')
+        'PORT': env('PORT_DB'),
+        'TEST': {
+            'NAME': 'test_mydb',
+        },
     }
 }
 

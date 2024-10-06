@@ -39,7 +39,7 @@ def get_matching_menus(current_url: str) -> Optional[List[Menu]]:
   menu_with_items = Menu.objects.prefetch_related(
     Prefetch(
       'items',
-      queryset=MenuItem.objects.select_related('menu').order_by('order')
+      queryset=MenuItem.objects.select_related('menu')
     )
   ).filter(
     Q(url=current_url) |
@@ -52,7 +52,3 @@ def get_matching_menus(current_url: str) -> Optional[List[Menu]]:
     return menu_with_items
 
   return None
-
-
-def hello(request, menu_url):
-  return HttpResponse('Hello world!')

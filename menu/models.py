@@ -27,7 +27,7 @@ class Menu(models.Model):
     super().save(*args, **kwargs)
 
   def __str__(self):
-    return self.name
+    return self.title
 
 
 class MenuItem(models.Model):
@@ -45,6 +45,16 @@ class MenuItem(models.Model):
   named_url = models.CharField(max_length=255, blank=True, null=True)
   parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
   menu = models.ForeignKey(Menu, related_name='items', on_delete=models.CASCADE)
+
+  def save(self, *args, **kwargs):
+    """
+    Убираем слэш по краям
+    """
+    if self.url:
+      self.url = self.url.strip('/')
+    if self.named_url:
+      self.named_url = self.named_url.strip('/')
+    super().save(*args, **kwargs)
 
   def __str__(self):
     return self.title
