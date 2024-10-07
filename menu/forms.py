@@ -4,6 +4,7 @@
 from django import forms
 from .models import MenuItem
 
+
 class MenuItemAdminForm(forms.ModelForm):
     class Meta:
         model = MenuItem
