@@ -37,12 +37,12 @@
 git clone https://github.com/VitaliyKozhushko/tree_menu.git
 ```
 2. Настройте .env файл
+   - в корне проекта
 3. Запустите проект:
    * (суперпользователь будет автоматически создан - login: admin, password - admin)
    - либо в ручном режиме (предварительно активировав среду venv):
       ```shell
         pip install -r requirements.txt
-        python manage.py collectstatic
         python manage.py makemigrations
         python manage.py migrate
         python create_superuser.py
